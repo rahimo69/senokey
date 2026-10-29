@@ -1,0 +1,527 @@
+{
+  "netflix": {
+    "id": "netflix",
+    "name": "Netflix Premium",
+    "cat": "streaming",
+    "icon": "🎬",
+    "color": "#e50914",
+    "bg": "rgba(229,9,20,.15)",
+    "desc": "Private 4K Netflix — 4 screens, UHD quality, private account",
+    "tags": [
+      "4K",
+      "4 Screens",
+      "Private"
+    ],
+    "credFields": [
+      {
+        "k": "email",
+        "l": "Email"
+      },
+      {
+        "k": "password",
+        "l": "Password"
+      },
+      {
+        "k": "plan",
+        "l": "Plan",
+        "ph": "Premium 4K"
+      },
+      {
+        "k": "expires",
+        "l": "Expires",
+        "ph": "Dec 2026"
+      },
+      {
+        "k": "pin",
+        "l": "Profile PIN",
+        "ph": "(optional)"
+      }
+    ],
+    "note": "Change the password immediately after signing in.",
+    "enabled": true,
+    "order": 1
+  },
+  "disney": {
+    "id": "disney",
+    "name": "Disney+",
+    "cat": "streaming",
+    "icon": "🏰",
+    "color": "#113ccf",
+    "bg": "rgba(17,60,207,.15)",
+    "desc": "Marvel, Star Wars, Pixar, National Geographic, Disney classics",
+    "tags": [
+      "4K",
+      "Family",
+      "Bundle"
+    ],
+    "credFields": [
+      {
+        "k": "email",
+        "l": "Email"
+      },
+      {
+        "k": "password",
+        "l": "Password"
+      },
+      {
+        "k": "plan",
+        "l": "Plan",
+        "ph": "Disney+ Standard"
+      },
+      {
+        "k": "expires",
+        "l": "Expires"
+      }
+    ],
+    "note": "Change the password immediately after signing in.",
+    "enabled": true,
+    "order": 2
+  },
+  "max": {
+    "id": "max",
+    "name": "Max (HBO)",
+    "cat": "streaming",
+    "icon": "🎭",
+    "color": "#5a189a",
+    "bg": "rgba(90,24,154,.15)",
+    "desc": "HBO originals, Warner Bros films, live sports and news",
+    "tags": [
+      "4K",
+      "HBO",
+      "WB Films"
+    ],
+    "credFields": [
+      {
+        "k": "email",
+        "l": "Email"
+      },
+      {
+        "k": "password",
+        "l": "Password"
+      },
+      {
+        "k": "plan",
+        "l": "Plan",
+        "ph": "Ultimate 4K"
+      },
+      {
+        "k": "expires",
+        "l": "Expires"
+      }
+    ],
+    "note": "Change the password immediately after signing in.",
+    "enabled": true,
+    "order": 3
+  },
+  "prime": {
+    "id": "prime",
+    "name": "Amazon Prime Video",
+    "cat": "streaming",
+    "icon": "📦",
+    "color": "#00a8e0",
+    "bg": "rgba(0,168,224,.12)",
+    "desc": "Lifetime Prime Video access via unlock — unlimited films & series",
+    "tags": [
+      "Lifetime",
+      "HD",
+      "Originals"
+    ],
+    "credFields": [
+      {
+        "k": "email",
+        "l": "Email"
+      },
+      {
+        "k": "password",
+        "l": "Password"
+      },
+      {
+        "k": "plan",
+        "l": "Plan",
+        "ph": "Prime Video"
+      },
+      {
+        "k": "expires",
+        "l": "Expires"
+      }
+    ],
+    "note": "Change the email and password immediately.",
+    "enabled": true,
+    "order": 4
+  },
+  "crunchyroll": {
+    "id": "crunchyroll",
+    "name": "Crunchyroll Premium",
+    "cat": "streaming",
+    "icon": "🌸",
+    "color": "#f47521",
+    "bg": "rgba(244,117,33,.12)",
+    "desc": "All anime, simulcasts, dubs, no ads — full premium experience",
+    "tags": [
+      "HD",
+      "No Ads",
+      "Simulcasts"
+    ],
+    "credFields": [
+      {
+        "k": "email",
+        "l": "Email"
+      },
+      {
+        "k": "password",
+        "l": "Password"
+      },
+      {
+        "k": "expires",
+        "l": "Expires"
+      }
+    ],
+    "note": "Change the password immediately after signing in.",
+    "enabled": true,
+    "order": 5
+  },
+  "youtube": {
+    "id": "youtube",
+    "name": "YouTube Premium",
+    "cat": "streaming",
+    "icon": "▶",
+    "color": "#ff0000",
+    "bg": "rgba(255,0,0,.1)",
+    "desc": "Ad-free YouTube plus YouTube Music included in every plan",
+    "tags": [
+      "No Ads",
+      "YT Music",
+      "4K"
+    ],
+    "credFields": [
+      {
+        "k": "email",
+        "l": "Gmail"
+      },
+      {
+        "k": "password",
+        "l": "Password"
+      },
+      {
+        "k": "expires",
+        "l": "Expires"
+      }
+    ],
+    "note": "Sign in to YouTube using this Gmail account. Change the password.",
+    "enabled": true,
+    "order": 6
+  },
+  "appletv": {
+    "id": "appletv",
+    "name": "Apple TV+",
+    "cat": "streaming",
+    "icon": "🍎",
+    "color": "#888888",
+    "bg": "rgba(136,136,136,.1)",
+    "desc": "Apple originals — Severance, Ted Lasso, The Morning Show & more",
+    "tags": [
+      "4K",
+      "Dolby",
+      "Originals"
+    ],
+    "credFields": [
+      {
+        "k": "email",
+        "l": "Apple ID"
+      },
+      {
+        "k": "password",
+        "l": "Password"
+      },
+      {
+        "k": "expires",
+        "l": "Expires"
+      }
+    ],
+    "note": "Change the Apple ID password immediately.",
+    "enabled": true,
+    "order": 7
+  },
+  "hulu": {
+    "id": "hulu",
+    "name": "Hulu",
+    "cat": "streaming",
+    "icon": "💚",
+    "color": "#1ce783",
+    "bg": "rgba(28,231,131,.1)",
+    "desc": "Hulu No-Ads plan — movies, shows, next-day TV and Originals",
+    "tags": [
+      "No Ads",
+      "Live TV",
+      "4K"
+    ],
+    "credFields": [
+      {
+        "k": "email",
+        "l": "Email"
+      },
+      {
+        "k": "password",
+        "l": "Password"
+      },
+      {
+        "k": "plan",
+        "l": "Plan",
+        "ph": "No Ads"
+      },
+      {
+        "k": "expires",
+        "l": "Expires"
+      }
+    ],
+    "note": "Change the password immediately after signing in.",
+    "enabled": true,
+    "order": 8
+  },
+  "spotify1m": {
+    "id": "spotify1m",
+    "name": "Spotify 1 Month",
+    "cat": "music",
+    "icon": "🎵",
+    "color": "#1db954",
+    "bg": "rgba(29,185,84,.1)",
+    "desc": "Premium music for 1 month. Email + password delivered instantly.",
+    "tags": [
+      "1 Month",
+      "No Ads",
+      "Offline"
+    ],
+    "credFields": [
+      {
+        "k": "email",
+        "l": "Email"
+      },
+      {
+        "k": "password",
+        "l": "Password"
+      }
+    ],
+    "note": "Change the email and password immediately to secure your account.",
+    "enabled": true,
+    "order": 9
+  },
+  "spotify3m": {
+    "id": "spotify3m",
+    "name": "Spotify 3 Months",
+    "cat": "music",
+    "icon": "🎵",
+    "color": "#1db954",
+    "bg": "rgba(29,185,84,.12)",
+    "desc": "Premium music for 3 months. Change password after redeem.",
+    "tags": [
+      "3 Months",
+      "No Ads",
+      "Offline"
+    ],
+    "credFields": [
+      {
+        "k": "email",
+        "l": "Email"
+      },
+      {
+        "k": "password",
+        "l": "Password"
+      }
+    ],
+    "note": "Change the email and password immediately to secure your account.",
+    "enabled": true,
+    "order": 10
+  },
+  "deezer": {
+    "id": "deezer",
+    "name": "Deezer Premium",
+    "cat": "music",
+    "icon": "🎶",
+    "color": "#a238ff",
+    "bg": "rgba(162,56,255,.12)",
+    "desc": "HiFi lossless audio, 90M+ tracks, offline listening",
+    "tags": [
+      "HiFi",
+      "Lossless",
+      "Offline"
+    ],
+    "credFields": [
+      {
+        "k": "email",
+        "l": "Email"
+      },
+      {
+        "k": "password",
+        "l": "Password"
+      },
+      {
+        "k": "expires",
+        "l": "Expires"
+      }
+    ],
+    "note": "Change the password after signing in.",
+    "enabled": true,
+    "order": 11
+  },
+  "chatgpt": {
+    "id": "chatgpt",
+    "name": "ChatGPT Plus",
+    "cat": "ai",
+    "icon": "🤖",
+    "color": "#10a37f",
+    "bg": "rgba(16,163,127,.12)",
+    "desc": "GPT-4o, DALL-E 3, Advanced Voice, all features fully unlocked",
+    "tags": [
+      "GPT-4o",
+      "DALL-E",
+      "Voice"
+    ],
+    "credFields": [
+      {
+        "k": "email",
+        "l": "Email"
+      },
+      {
+        "k": "password",
+        "l": "Password"
+      },
+      {
+        "k": "expires",
+        "l": "Expires"
+      }
+    ],
+    "note": "Change the password immediately.",
+    "enabled": true,
+    "order": 12
+  },
+  "claude": {
+    "id": "claude",
+    "name": "Claude Code",
+    "cat": "ai",
+    "icon": "🧠",
+    "color": "#d97706",
+    "bg": "rgba(217,119,6,.12)",
+    "desc": "Haiku, Sonnet or Opus — cheap full Claude API access",
+    "tags": [
+      "Haiku",
+      "Sonnet",
+      "Opus"
+    ],
+    "credFields": [
+      {
+        "k": "email",
+        "l": "Email"
+      },
+      {
+        "k": "password",
+        "l": "Password"
+      },
+      {
+        "k": "apiKey",
+        "l": "API Key",
+        "ph": "sk-ant-..."
+      },
+      {
+        "k": "plan",
+        "l": "Plan",
+        "ph": "Pro"
+      }
+    ],
+    "note": "Do not share your API key.",
+    "enabled": true,
+    "order": 13
+  },
+  "capcut": {
+    "id": "capcut",
+    "name": "CapCut Pro",
+    "cat": "tools",
+    "icon": "🎞",
+    "color": "#ffffff",
+    "bg": "rgba(255,255,255,.06)",
+    "desc": "Pro effects, no watermark, premium templates and filters",
+    "tags": [
+      "No Watermark",
+      "Pro FX",
+      "Templates"
+    ],
+    "credFields": [
+      {
+        "k": "email",
+        "l": "Email"
+      },
+      {
+        "k": "password",
+        "l": "Password"
+      },
+      {
+        "k": "expires",
+        "l": "Expires"
+      }
+    ],
+    "note": "Change the password immediately.",
+    "enabled": true,
+    "order": 14
+  },
+  "nordvpn": {
+    "id": "nordvpn",
+    "name": "NordVPN Premium",
+    "cat": "tools",
+    "icon": "🛡",
+    "color": "#4687ff",
+    "bg": "rgba(70,135,255,.12)",
+    "desc": "1 month VPN — fastest servers in 60+ countries, kill switch",
+    "tags": [
+      "1 Month",
+      "60+ Countries",
+      "Fast"
+    ],
+    "credFields": [
+      {
+        "k": "email",
+        "l": "Email"
+      },
+      {
+        "k": "password",
+        "l": "Password"
+      },
+      {
+        "k": "expires",
+        "l": "Expires"
+      }
+    ],
+    "note": "Download NordVPN and sign in with these credentials.",
+    "enabled": true,
+    "order": 15
+  },
+  "notion": {
+    "id": "notion",
+    "name": "Notion AI",
+    "cat": "tools",
+    "icon": "📝",
+    "color": "#ffffff",
+    "bg": "rgba(255,255,255,.06)",
+    "desc": "Notion Plus with AI — unlimited pages, AI assistant, team workspaces",
+    "tags": [
+      "AI",
+      "Unlimited",
+      "Teams"
+    ],
+    "credFields": [
+      {
+        "k": "email",
+        "l": "Email"
+      },
+      {
+        "k": "password",
+        "l": "Password"
+      },
+      {
+        "k": "expires",
+        "l": "Expires"
+      }
+    ],
+    "note": "Change the password immediately after signing in.",
+    "enabled": true,
+    "order": 16
+  }
+}

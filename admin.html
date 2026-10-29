@@ -1,0 +1,1539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SenoKey Admin</title>
+<style>
+:root{
+  --bg:#060a15;--bg2:#0c1220;--bg3:#111827;--bg4:#1a2234;
+  --purple:#8b5cf6;--purple2:#7c3aed;--cyan:#22d3ee;
+  --green:#10b981;--red:#f43f5e;--orange:#f59e0b;--yellow:#facc15;
+  --text:#f8fafc;--dim:rgba(248,250,252,.5);--dim2:rgba(248,250,252,.72);
+  --glass:rgba(255,255,255,.04);--glass2:rgba(255,255,255,.07);--glass3:rgba(255,255,255,.11);
+  --border:rgba(255,255,255,.08);--border2:rgba(255,255,255,.15);
+  --r:8px;--r2:6px;--r3:12px;
+  --shadow:0 8px 32px rgba(0,0,0,.5);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;font-size:13px;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-weight:700;line-height:1.2}
+a{color:var(--purple);text-decoration:none}
+::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px}
+
+/* ── Login ── */
+#login{
+  position:fixed;inset:0;z-index:999;display:flex;align-items:center;justify-content:center;
+  background:var(--bg);
+}
+.login-card{
+  width:380px;padding:40px;border-radius:16px;
+  background:linear-gradient(160deg,rgba(255,255,255,.07),rgba(255,255,255,.03));
+  border:1px solid var(--border2);box-shadow:0 30px 80px rgba(0,0,0,.6);
+  text-align:center;
+}
+.login-logo{font-size:40px;margin-bottom:16px}
+.login-title{font-size:20px;font-weight:800;margin-bottom:6px}
+.login-sub{color:var(--dim2);font-size:12px;margin-bottom:28px}
+.fi{
+  width:100%;padding:12px 14px;border-radius:var(--r);border:1px solid var(--border2);
+  background:rgba(0,0,0,.4);color:var(--text);font-family:inherit;font-size:14px;
+  outline:none;margin-bottom:12px;transition:border-color .2s;
+}
+.fi:focus{border-color:rgba(139,92,246,.6);box-shadow:0 0 0 3px rgba(139,92,246,.12)}
+.login-btn{
+  width:100%;padding:13px;border:none;border-radius:var(--r);cursor:pointer;
+  font-family:inherit;font-size:14px;font-weight:700;letter-spacing:.3px;
+  background:linear-gradient(135deg,var(--purple2),#4f46e5);color:#fff;
+  box-shadow:0 4px 20px rgba(124,58,237,.4);transition:all .2s;
+}
+.login-btn:hover{transform:translateY(-1px);box-shadow:0 6px 28px rgba(124,58,237,.5)}
+.login-err{color:var(--red);font-size:12px;margin-top:8px;display:none}
+
+/* ── App layout ── */
+#app{display:none;height:100vh;display:none;flex-direction:row}
+#app.show{display:flex}
+
+/* Sidebar */
+.sidebar{
+  width:220px;min-width:220px;background:rgba(6,10,21,.95);
+  border-right:1px solid var(--border);display:flex;flex-direction:column;
+  overflow:hidden;z-index:10;
+}
+.sb-logo{
+  padding:20px 18px 16px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:10px;
+}
+.sb-logo-ico{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--purple2),var(--cyan));display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.sb-logo-name{font-size:15px;font-weight:800;letter-spacing:-.3px}
+.sb-logo-badge{font-size:9px;color:var(--purple);font-weight:700;letter-spacing:1px;background:rgba(139,92,246,.12);padding:2px 6px;border-radius:4px;border:1px solid rgba(139,92,246,.25)}
+.sb-nav{flex:1;padding:8px 0;overflow-y:auto}
+.sb-item{
+  display:flex;align-items:center;gap:10px;padding:10px 16px;cursor:pointer;
+  color:var(--dim2);font-size:13px;font-weight:500;transition:all .14s;
+  border-left:2px solid transparent;
+}
+.sb-item:hover{color:var(--text);background:var(--glass2)}
+.sb-item.on{color:#fff;border-left-color:var(--purple);background:linear-gradient(90deg,rgba(139,92,246,.15),transparent);text-shadow:0 0 12px rgba(139,92,246,.4)}
+.sb-item-ico{font-size:15px;min-width:18px;text-align:center}
+.sb-section{padding:12px 16px 4px;font-size:9px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--dim)}
+.sb-footer{padding:14px 16px;border-top:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.sb-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+
+/* Main content */
+.main{flex:1;overflow-y:auto;display:flex;flex-direction:column}
+.topbar{
+  padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--border);background:rgba(6,10,21,.7);
+  backdrop-filter:blur(12px);position:sticky;top:0;z-index:5;flex-shrink:0;
+}
+.topbar-title{font-size:15px;font-weight:700}
+.topbar-right{display:flex;align-items:center;gap:10px}
+
+/* Content area */
+.content{padding:24px;flex:1}
+
+/* ── Buttons ── */
+.btn{
+  display:inline-flex;align-items:center;gap:6px;padding:8px 16px;
+  border-radius:var(--r2);border:1px solid transparent;cursor:pointer;
+  font-family:inherit;font-size:12px;font-weight:600;transition:all .14s;white-space:nowrap;
+}
+.btn-primary{background:linear-gradient(135deg,var(--purple2),#4f46e5);color:#fff;box-shadow:0 2px 12px rgba(124,58,237,.35)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 4px 20px rgba(124,58,237,.45)}
+.btn-ghost{background:var(--glass2);color:var(--dim2);border-color:var(--border)}
+.btn-ghost:hover{color:var(--text);border-color:var(--border2)}
+.btn-danger{background:rgba(244,63,94,.12);color:var(--red);border-color:rgba(244,63,94,.25)}
+.btn-danger:hover{background:rgba(244,63,94,.2)}
+.btn-green{background:rgba(16,185,129,.12);color:var(--green);border-color:rgba(16,185,129,.25)}
+.btn-green:hover{background:rgba(16,185,129,.2)}
+.btn-sm{padding:5px 10px;font-size:11px}
+.btn:disabled{opacity:.35;cursor:not-allowed;transform:none !important}
+
+/* ── Cards ── */
+.card{background:linear-gradient(160deg,var(--glass2),var(--glass));border:1px solid var(--border);border-radius:var(--r3);padding:20px}
+
+/* ── Stat cards ── */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:24px}
+.sc{background:linear-gradient(160deg,rgba(255,255,255,.07),rgba(255,255,255,.03));border:1px solid var(--border);border-radius:var(--r3);padding:16px;position:relative;overflow:hidden}
+.sc::before{content:'';position:absolute;top:0;left:20%;right:20%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.15),transparent)}
+.sc-n{font-size:28px;font-weight:800;line-height:1;margin-bottom:4px}
+.sc-l{font-size:11px;color:var(--dim);font-weight:500;text-transform:uppercase;letter-spacing:.6px}
+.sc-sub{font-size:10px;color:var(--dim);margin-top:2px}
+
+/* ── Tables ── */
+.tbl-wrap{border:1px solid var(--border);border-radius:var(--r3);overflow:hidden;margin-top:12px}
+.tbl-head{padding:10px 16px;background:rgba(255,255,255,.03);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+table{width:100%;border-collapse:collapse}
+th{padding:9px 14px;font-size:10px;letter-spacing:.6px;color:var(--dim2);text-transform:uppercase;font-weight:700;background:rgba(255,255,255,.03);border-bottom:1px solid var(--border);text-align:left;white-space:nowrap}
+td{padding:9px 14px;border-bottom:1px solid rgba(255,255,255,.04);font-size:12px;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.02)}
+.tbl-empty{text-align:center;padding:48px;color:var(--dim);font-size:13px}
+.tbl-scroll{max-height:520px;overflow-y:auto}
+
+/* ── Badges ── */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:100px;font-size:10px;font-weight:700;letter-spacing:.3px}
+.badge-green{background:rgba(16,185,129,.1);color:var(--green);border:1px solid rgba(16,185,129,.2)}
+.badge-red{background:rgba(244,63,94,.1);color:var(--red);border:1px solid rgba(244,63,94,.2)}
+.badge-orange{background:rgba(245,158,11,.1);color:var(--orange);border:1px solid rgba(245,158,11,.2)}
+.badge-purple{background:rgba(139,92,246,.1);color:var(--purple);border:1px solid rgba(139,92,246,.2)}
+.badge-gray{background:var(--glass2);color:var(--dim2);border:1px solid var(--border)}
+.badge-cyan{background:rgba(34,211,238,.1);color:var(--cyan);border:1px solid rgba(34,211,238,.2)}
+.badge-dead{background:rgba(239,68,68,.12);color:#f87171;border:1px solid rgba(239,68,68,.25)}
+.cookie-dot{display:inline-block;width:7px;height:7px;border-radius:50%;vertical-align:middle;margin-right:3px}
+.cookie-yes{background:var(--green);box-shadow:0 0 4px var(--green)}
+.cookie-no{background:rgba(255,255,255,.15)}
+
+/* ── Inputs ── */
+.inp{
+  padding:8px 12px;border-radius:var(--r2);border:1px solid var(--border2);
+  background:rgba(0,0,0,.3);color:var(--text);font-family:inherit;font-size:12px;outline:none;
+  transition:border-color .18s;
+}
+.inp:focus{border-color:rgba(139,92,246,.6);box-shadow:0 0 0 2px rgba(139,92,246,.12)}
+.inp-lg{padding:11px 14px;font-size:13px;border-radius:var(--r)}
+.ta{resize:vertical;min-height:100px;font-family:'Consolas','Courier New',monospace;font-size:11px;line-height:1.6}
+select.inp{cursor:pointer}
+option{background:var(--bg3)}
+label{display:block;font-size:11px;font-weight:600;color:var(--dim2);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px}
+
+/* Form rows */
+.form-row{margin-bottom:14px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-hint{font-size:11px;color:var(--dim);margin-top:5px;line-height:1.5}
+
+/* ── Modal ── */
+.modal-bg{
+  position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);
+  display:none;align-items:center;justify-content:center;padding:20px;
+}
+.modal-bg.show{display:flex}
+.modal{
+  background:var(--bg2);border:1px solid var(--border2);border-radius:16px;
+  padding:0;width:100%;max-height:90vh;overflow-y:auto;
+  box-shadow:0 40px 100px rgba(0,0,0,.7);
+  animation:modalIn .2s ease;
+}
+@keyframes modalIn{from{transform:translateY(20px) scale(.97);opacity:0}to{transform:none;opacity:1}}
+.modal-sm{max-width:440px}
+.modal-md{max-width:620px}
+.modal-lg{max-width:820px}
+.modal-hd{
+  padding:20px 24px 0;border-bottom:1px solid var(--border);margin-bottom:0;
+  display:flex;align-items:center;justify-content:space-between;padding-bottom:16px;
+  position:sticky;top:0;background:var(--bg2);z-index:1;
+}
+.modal-title{font-size:16px;font-weight:800}
+.modal-close{
+  width:28px;height:28px;border-radius:6px;border:1px solid var(--border);
+  background:var(--glass);cursor:pointer;color:var(--dim2);font-size:14px;
+  display:flex;align-items:center;justify-content:center;transition:all .14s;
+}
+.modal-close:hover{color:var(--text);border-color:var(--border2)}
+.modal-body{padding:24px}
+.modal-footer{padding:0 24px 20px;display:flex;gap:8px;justify-content:flex-end;border-top:1px solid var(--border);padding-top:16px}
+
+/* Tabs inside modal */
+.tab-row{display:flex;border-bottom:1px solid var(--border);margin-bottom:20px}
+.tab{padding:10px 16px;cursor:pointer;font-size:12px;font-weight:600;color:var(--dim2);border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s}
+.tab:hover{color:var(--text)}
+.tab.on{color:var(--purple);border-bottom-color:var(--purple)}
+.tab-pane{display:none}.tab-pane.on{display:block}
+
+/* ── Product cards in admin ── */
+.product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+.pc{background:linear-gradient(160deg,var(--glass2),var(--glass));border:1px solid var(--border);border-radius:var(--r3);padding:16px;transition:border-color .2s}
+.pc:hover{border-color:var(--border2)}
+.pc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.pc-ico{font-size:28px}
+.pc-name{font-size:13px;font-weight:700;margin-bottom:3px}
+.pc-cat{font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:.5px}
+.pc-stock{display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.pc-actions{display:flex;gap:5px;margin-top:10px}
+
+/* ── Log table ── */
+.log-type-redeem{color:var(--green)}
+.log-type-retrieve{color:var(--cyan)}
+
+/* ── Search/filter bar ── */
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.filter-bar .inp{min-width:180px}
+
+/* ── Divider ── */
+.div{height:1px;background:var(--border);margin:20px 0}
+
+/* ── Toast ── */
+.toast-area{position:fixed;bottom:20px;right:20px;z-index:999;display:flex;flex-direction:column;gap:6px;pointer-events:none}
+.toast{padding:11px 16px;border-radius:var(--r);font-size:12px;font-weight:500;pointer-events:all;
+  backdrop-filter:blur(20px);max-width:300px;animation:toastIn .2s ease}
+.toast-ok{background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.3);color:#6ee7b7}
+.toast-err{background:rgba(244,63,94,.12);border:1px solid rgba(244,63,94,.3);color:#fda4af}
+.toast-info{background:rgba(12,18,32,.9);border:1px solid var(--border2);color:var(--dim2)}
+@keyframes toastIn{from{transform:translateX(110%);opacity:0}to{transform:none;opacity:1}}
+@keyframes toastOut{from{transform:none;opacity:1}to{transform:translateX(110%);opacity:0}}
+
+/* ── Utils ── */
+.flex{display:flex;align-items:center;gap:8px}
+.flex-between{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.mb8{margin-bottom:8px}.mb12{margin-bottom:12px}.mb16{margin-bottom:16px}.mb20{margin-bottom:20px}
+.text-dim{color:var(--dim2)}.text-small{font-size:11px}.text-mono{font-family:'Consolas','Courier New',monospace;font-size:11px}
+.w100{width:100%}
+code{font-family:'Consolas','Courier New',monospace;font-size:11px;background:var(--glass2);padding:2px 6px;border-radius:4px;color:var(--cyan)}
+.spinner{width:16px;height:16px;border:2px solid var(--border2);border-top-color:var(--purple);border-radius:50%;animation:spin .6s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── File drop zone ── */
+.drop-zone{border:2px dashed var(--border2);border-radius:var(--r);padding:28px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s}
+.drop-zone:hover,.drop-zone.drag-over{border-color:var(--purple);background:rgba(139,92,246,.06)}
+.drop-ico{font-size:32px;margin-bottom:8px}
+/* ── Link cards (Netflix links etc.) ── */
+.link-card{padding:10px 14px;border-radius:var(--r2);background:var(--glass);border:1px solid var(--border);margin-bottom:8px}
+.link-card-lbl{font-size:10px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px}
+.link-card-url{font-size:10px;font-family:'Consolas','Courier New',monospace;color:var(--text);word-break:break-all;margin-bottom:6px;line-height:1.5}
+/* ── Section service breakdown ── */
+.svc-list{display:flex;flex-direction:column;gap:8px}
+.svc-row{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:var(--r2);background:var(--glass);border:1px solid var(--border)}
+.svc-bar-wrap{flex:1;height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden}
+.svc-bar{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--purple2),var(--cyan));min-width:4px}
+</style>
+</head>
+<body>
+
+<!-- ── Login ── -->
+<div id="login">
+  <div class="login-card">
+    <div class="login-logo">🔑</div>
+    <h2 class="login-title">SenoKey Admin</h2>
+    <p class="login-sub">Sign in to manage your key store</p>
+    <input class="fi" id="pwdInput" type="password" placeholder="Admin password" autocomplete="current-password">
+    <button class="login-btn" onclick="doLogin()">Sign In →</button>
+    <div class="login-err" id="loginErr">Wrong password. Try again.</div>
+  </div>
+</div>
+
+<!-- ── App ── -->
+<div id="app">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sb-logo">
+      <div class="sb-logo-ico">🔑</div>
+      <div>
+        <div class="sb-logo-name">SenoKey</div>
+        <div class="sb-logo-badge">ADMIN</div>
+      </div>
+    </div>
+    <nav class="sb-nav">
+      <div class="sb-section">Overview</div>
+      <div class="sb-item on"   data-page="dashboard"><span class="sb-item-ico">📊</span> Dashboard</div>
+      <div class="sb-section">Manage</div>
+      <div class="sb-item"       data-page="keys">     <span class="sb-item-ico">🔑</span> Keys <span id="sbKeyCount" style="margin-left:auto;font-size:10px;color:var(--dim)"></span></div>
+      <div class="sb-item"       data-page="products"> <span class="sb-item-ico">📦</span> Products</div>
+      <div class="sb-section">History</div>
+      <div class="sb-item"       data-page="log">      <span class="sb-item-ico">📋</span> Redemption Log</div>
+      <div class="sb-section">System</div>
+      <div class="sb-item"       data-page="settings"> <span class="sb-item-ico">⚙️</span> Settings</div>
+    </nav>
+    <div class="sb-footer">
+      <span class="sb-dot"></span>
+      <span style="font-size:11px;color:var(--dim)">Server running</span>
+      <button class="btn btn-ghost btn-sm" style="margin-left:auto" onclick="doLogout()">Sign out</button>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-title" id="topbarTitle">Dashboard</div>
+      <div class="topbar-right" id="topbarActions"></div>
+    </div>
+    <div class="content" id="content"></div>
+  </div>
+</div>
+
+<div class="toast-area" id="toastArea"></div>
+
+<!-- ── Modals ── -->
+<div class="modal-bg" id="modalBg" onclick="if(event.target===this)closeModal()">
+  <div class="modal" id="modal"></div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+
+// ── Auth ──────────────────────────────────────────────────────────────────────
+async function checkAuth() {
+  const r = await fetch('/api/admin/stats').catch(()=>null);
+  if (r?.ok) showApp();
+}
+
+async function doLogin() {
+  const pwd = $('pwdInput').value;
+  const r = await fetch('/api/admin/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:pwd})});
+  if (r.ok) { showApp(); }
+  else { $('loginErr').style.display='block'; $('pwdInput').value=''; $('pwdInput').focus(); }
+}
+$('pwdInput').onkeydown = e => { if(e.key==='Enter') doLogin(); };
+
+async function doLogout() {
+  await fetch('/api/admin/logout',{method:'POST'});
+  location.reload();
+}
+
+function showApp() {
+  $('login').style.display='none';
+  $('app').classList.add('show');
+  navigate('dashboard');
+}
+
+checkAuth();
+
+// ── Navigation ─────────────────────────────────────────────────────────────────
+const PAGES = { dashboard: loadDashboard, keys: loadKeys, products: loadProducts, log: loadLog, settings: loadSettings };
+const PAGE_TITLES = { dashboard:'Dashboard', keys:'Key Management', products:'Products', log:'Redemption Log', settings:'Settings' };
+let currentPage = '';
+
+function navigate(page) {
+  if (!PAGES[page]) return;
+  currentPage = page;
+  document.querySelectorAll('.sb-item').forEach(i=>i.classList.toggle('on', i.dataset.page===page));
+  $('topbarTitle').textContent = PAGE_TITLES[page] || page;
+  $('topbarActions').innerHTML = '';
+  PAGES[page]();
+}
+
+document.querySelectorAll('.sb-item[data-page]').forEach(i=>i.onclick=()=>navigate(i.dataset.page));
+
+// ── API helpers ───────────────────────────────────────────────────────────────
+const api = {
+  get:  async url       => { const r=await fetch(url); return r.json(); },
+  post: async (url,d)   => { const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)}); return r.json(); },
+  del:  async url       => { const r=await fetch(url,{method:'DELETE'}); return r.json(); },
+  patch:async (url,d)   => { const r=await fetch(url,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)}); return r.json(); },
+};
+
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function fmtDate(ts){ return ts ? new Date(ts).toLocaleString() : '—'; }
+function fmtAgo(ts){
+  if(!ts) return '—';
+  const d=Date.now()-ts, m=60000, h=3600000, dy=86400000;
+  if(d<m) return Math.round(d/1000)+'s ago';
+  if(d<h) return Math.round(d/m)+'m ago';
+  if(d<dy) return Math.round(d/h)+'h ago';
+  return Math.round(d/dy)+'d ago';
+}
+
+// ── Toast ──────────────────────────────────────────────────────────────────────
+function toast(msg,type='info',dur=4000){
+  const el=document.createElement('div');
+  el.className='toast toast-'+type; el.textContent=msg;
+  $('toastArea').appendChild(el);
+  setTimeout(()=>{el.style.animation='toastOut .2s forwards';setTimeout(()=>el.remove(),200)},dur);
+}
+
+// ── Modal ──────────────────────────────────────────────────────────────────────
+function openModal(html,size='modal-md'){
+  $('modal').className='modal '+size;
+  $('modal').innerHTML=html;
+  $('modalBg').classList.add('show');
+}
+function closeModal(){ $('modalBg').classList.remove('show'); }
+
+// ── DASHBOARD ──────────────────────────────────────────────────────────────────
+async function loadDashboard() {
+  $('content').innerHTML='<div class="text-dim">Loading…</div>';
+  const d = await api.get('/api/admin/stats');
+  const pct = d.total ? Math.round(d.claimed/d.total*100) : 0;
+
+  $('content').innerHTML = `
+    <div class="stat-grid">
+      <div class="sc">
+        <div class="sc-n">${d.total.toLocaleString()}</div>
+        <div class="sc-l">Total Keys</div>
+        <div class="sc-sub">${d.disabled} disabled · ${d.dead||0} dead</div>
+      </div>
+      <div class="sc">
+        <div class="sc-n" style="color:var(--green)">${d.unclaimed.toLocaleString()}</div>
+        <div class="sc-l">Available</div>
+        <div class="sc-sub">${d.withCookie||0} with cookie check</div>
+      </div>
+      <div class="sc">
+        <div class="sc-n" style="color:var(--purple)">${d.claimed.toLocaleString()}</div>
+        <div class="sc-l">Redeemed</div>
+        <div class="sc-sub">${pct}% redemption rate</div>
+      </div>
+      <div class="sc">
+        <div class="sc-n" style="color:var(--cyan)">${d.services.length}</div>
+        <div class="sc-l">Services</div>
+        <div class="sc-sub">Active products</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px">
+      <div class="card">
+        <div class="flex-between mb12">
+          <h3 style="font-size:13px">Stock by Service</h3>
+          <button class="btn btn-ghost btn-sm" onclick="navigate('keys')">Manage →</button>
+        </div>
+        <div class="svc-list">
+          ${d.services.map(s=>`
+            <div class="svc-row">
+              <span style="font-size:16px">${esc(s.icon)}</span>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(s.name)}</div>
+                <div class="svc-bar-wrap" style="margin-top:4px">
+                  <div class="svc-bar" style="width:${s.total?Math.round(s.available/s.total*100):0}%"></div>
+                </div>
+              </div>
+              <div style="text-align:right;flex-shrink:0">
+                <div style="font-size:12px;font-weight:700;color:${s.available>0?'var(--green)':'var(--red)'}">${s.available}</div>
+                <div style="font-size:10px;color:var(--dim)">${s.claimed} claimed</div>
+              </div>
+            </div>
+          `).join('') || '<div class="text-dim" style="padding:20px;text-align:center">No keys yet</div>'}
+        </div>
+      </div>
+      <div class="card">
+        <div class="flex-between mb12">
+          <h3 style="font-size:13px">Recent Activity</h3>
+          <button class="btn btn-ghost btn-sm" onclick="navigate('log')">View all →</button>
+        </div>
+        <div>
+          ${d.recentLog.slice(0,12).map(l=>`
+            <div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border)">
+              <span class="badge ${l.type==='redeem'?'badge-green':'badge-cyan'}">${l.type==='redeem'?'NEW':'RETRIEVE'}</span>
+              <code style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(l.key)}</code>
+              <span class="text-dim text-small">${fmtAgo(l.at)}</span>
+            </div>
+          `).join('') || '<div class="text-dim" style="padding:20px;text-align:center">No activity yet</div>'}
+        </div>
+      </div>
+    </div>
+
+    <div class="flex" style="gap:10px">
+      <button class="btn btn-primary" onclick="openAddKeys()">➕ Add Keys</button>
+      <button class="btn btn-ghost" onclick="navigate('keys')">🔑 Manage Keys</button>
+      <button class="btn btn-ghost" onclick="navigate('products')">📦 Products</button>
+      <button class="btn btn-ghost" onclick="runCheckAll()" id="checkAllBtn">🔍 Check All Cookies</button>
+    </div>
+  `;
+
+  // Update sidebar key count
+  $('sbKeyCount').textContent = d.unclaimed + ' in stock';
+}
+
+// ── KEYS ───────────────────────────────────────────────────────────────────────
+let keysData = [], keysFilter = { service:'', status:'', search:'' };
+
+async function loadKeys() {
+  $('topbarActions').innerHTML = `<button class="btn btn-primary" onclick="openAddKeys()">➕ Add Keys</button>`;
+  $('content').innerHTML='<div class="text-dim">Loading…</div>';
+
+  const products = await api.get('/api/admin/products');
+  const svcOpts  = Object.values(products).map(p=>`<option value="${p.id}">${p.icon} ${p.name}</option>`).join('');
+
+  keysData = await api.get('/api/admin/keys');
+
+  renderKeysPage(products, svcOpts);
+}
+
+function renderKeysPage(products, svcOpts) {
+  const { service, status, search } = keysFilter;
+  let list = keysData;
+  if (service) list = list.filter(k=>k.service===service);
+  if (status==='available') list = list.filter(k=>!k.claimed&&!k.disabled);
+  if (status==='claimed')   list = list.filter(k=>k.claimed&&!k.disabled);
+  if (status==='disabled')  list = list.filter(k=>k.disabled);
+  if (search) { const s=search.toLowerCase(); list=list.filter(k=>k.key.toLowerCase().includes(s)||k.service.toLowerCase().includes(s)||(k.credentials?.email||'').toLowerCase().includes(s)); }
+
+  const total = keysData.length;
+  const avail = keysData.filter(k=>!k.claimed&&!k.disabled).length;
+
+  $('content').innerHTML = `
+    <div class="stat-grid" style="grid-template-columns:repeat(4,1fr)">
+      <div class="sc"><div class="sc-n">${total}</div><div class="sc-l">Total</div></div>
+      <div class="sc"><div class="sc-n" style="color:var(--green)">${avail}</div><div class="sc-l">Available</div></div>
+      <div class="sc"><div class="sc-n" style="color:var(--purple)">${keysData.filter(k=>k.claimed).length}</div><div class="sc-l">Claimed</div></div>
+      <div class="sc"><div class="sc-n" style="color:var(--dim2)">${keysData.filter(k=>k.disabled).length}</div><div class="sc-l">Disabled</div></div>
+    </div>
+
+    <div class="tbl-wrap">
+      <div class="tbl-head">
+        <div class="filter-bar">
+          <input class="inp" id="keySearch" placeholder="Search key / email…" value="${esc(search)}" oninput="keysFilter.search=this.value;refilterKeys()">
+          <select class="inp" id="svcFilter" onchange="keysFilter.service=this.value;refilterKeys()">
+            <option value="">All services</option>${svcOpts}
+          </select>
+          <select class="inp" id="stFilter" onchange="keysFilter.status=this.value;refilterKeys()">
+            <option value="">All status</option>
+            <option value="available">Available</option>
+            <option value="claimed">Claimed</option>
+            <option value="disabled">Disabled</option>
+            <option value="dead">Dead (expired)</option>
+          </select>
+        </div>
+        <div class="flex">
+          <span class="text-dim text-small">${list.length} of ${total}</span>
+          <button class="btn btn-ghost btn-sm" onclick="exportKeys()">⬇ Export</button>
+          <button class="btn btn-primary btn-sm" onclick="openAddKeys()">➕ Add</button>
+        </div>
+      </div>
+      <div class="tbl-scroll">
+        <table id="keysTable">
+          <thead><tr>
+            <th>Key</th><th>Service</th><th>Status</th><th>Cookie</th><th>Last Check</th><th>Email</th><th>Added</th><th>Actions</th>
+          </tr></thead>
+          <tbody>
+            ${list.length===0?`<tr><td colspan="8" class="tbl-empty">No keys match your filter</td></tr>`
+              : list.slice(0,200).map(k=>{
+                const p = products[k.service] || {};
+                const status = k.dead ? ['badge-dead','💀 Dead'] : k.disabled ? ['badge-gray','Disabled'] : k.claimed ? ['badge-purple','Claimed'] : ['badge-green','Available'];
+                const checkBadge = k.lastCheckOk===true ? '<span class="badge badge-green">✓ Alive</span>'
+                  : k.lastCheckOk===false ? '<span class="badge badge-dead">✗ Dead</span>'
+                  : k.lastChecked ? '<span class="badge badge-gray">? Unknown</span>' : '—';
+                return `<tr>
+                  <td><code>${esc(k.key)}</code></td>
+                  <td><span style="margin-right:5px">${esc(p.icon||'')}</span>${esc(p.name||k.service)}</td>
+                  <td><span class="badge ${status[0]}">${status[1]}</span></td>
+                  <td><span class="cookie-dot ${k.hasCookie?'cookie-yes':'cookie-no'}"></span>${k.hasCookie?'Yes':'—'}</td>
+                  <td>${checkBadge}<span class="text-dim text-small" style="margin-left:4px">${k.lastChecked?fmtAgo(k.lastChecked):''}</span></td>
+                  <td class="text-mono">${esc(k.credentials?.email||'—')}</td>
+                  <td class="text-small text-dim">${fmtAgo(k.addedAt)}</td>
+                  <td>
+                    <div class="flex">
+                      <button class="btn btn-ghost btn-sm" onclick="viewKey('${esc(k.key)}')">View</button>
+                      ${k.hasCookie?`<button class="btn btn-ghost btn-sm" onclick="checkKey('${esc(k.key)}')">🔍</button>`:''}
+                      ${k.claimed?`<button class="btn btn-ghost btn-sm" onclick="unclaimKey('${esc(k.key)}')">Unclaim</button>`:''}
+                      ${k.dead?`<button class="btn btn-green btn-sm" onclick="reviveKey('${esc(k.key)}')">Revive</button>`:''}
+                      <button class="btn btn-ghost btn-sm" onclick="toggleDisable('${esc(k.key)}',${!k.disabled})">${k.disabled?'Enable':'Disable'}</button>
+                      <button class="btn btn-danger btn-sm" onclick="deleteKey('${esc(k.key)}')">Del</button>
+                    </div>
+                  </td>
+                </tr>`;
+              }).join('')}
+          </tbody>
+        </table>
+        ${list.length>200?`<div style="padding:12px;text-align:center;color:var(--dim);font-size:11px">Showing first 200 of ${list.length} — use filters to narrow down</div>`:''}
+      </div>
+    </div>
+  `;
+
+  // Set filter UI values
+  const sf = $('svcFilter'), stf=$('stFilter');
+  if(sf) sf.value = service;
+  if(stf) stf.value = status;
+}
+
+function refilterKeys() {
+  // rebuild table without re-fetching
+  const products = {};
+  fetch('/api/admin/products').then(r=>r.json()).then(p=>{
+    Object.assign(products,p);
+    const svcOpts=Object.values(p).map(x=>`<option value="${x.id}">${x.icon} ${x.name}</option>`).join('');
+    renderKeysPage(p, svcOpts);
+  });
+}
+
+async function viewKey(key) {
+  const k = await api.get('/api/admin/key/'+encodeURIComponent(key));
+  const products = await api.get('/api/admin/products');
+  const p = products[k.service] || {};
+  const fields = p.credFields || [{k:'email',l:'Email'},{k:'password',l:'Password'}];
+  const credHtml = fields.map(f=>`
+    <div class="form-row">
+      <label>${f.l}</label>
+      <input class="inp w100" id="vcf_${f.k}" value="${esc(k.credentials?.[f.k]||'')}" placeholder="${f.ph||''}">
+    </div>
+  `).join('');
+
+  openModal(`
+    <div class="modal-hd">
+      <div class="modal-title">${esc(p.icon||'🔑')} ${esc(key)}</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="flex mb16" style="flex-wrap:wrap;gap:6px">
+        <span class="badge ${k.dead?'badge-dead':k.disabled?'badge-gray':k.claimed?'badge-purple':'badge-green'}">${k.dead?'💀 Dead':k.disabled?'Disabled':k.claimed?'Claimed':'Available'}</span>
+        <span class="text-dim text-small">Service: <b>${esc(p.name||k.service)}</b></span>
+        ${k.claimed?`<span class="text-dim text-small">Claimed: <b>${fmtDate(k.claimedAt)}</b></span>`:''}
+        ${k.claimedIP?`<span class="text-dim text-small">IP: <b>${esc(k.claimedIP)}</b></span>`:''}
+        ${k.hasCookie?`<span class="badge badge-green">🍪 Cookie set</span>`:'<span class="badge badge-gray">No cookie</span>'}
+        ${k.lastChecked?`<span class="text-dim text-small">Last check: ${fmtAgo(k.lastChecked)} → <b>${k.lastCheckOk===true?'✅ Alive':k.lastCheckOk===false?'💀 Dead':'❓ Unknown'}</b></span>`:''}
+      </div>
+      <h4 class="mb12">Credentials <span style="font-size:10px;color:var(--dim);font-weight:400">(shown to customers)</span></h4>
+      <input type="hidden" id="vcKey" value="${esc(key)}">
+      ${credHtml}
+      <div style="height:1px;background:var(--border);margin:16px 0"></div>
+      <h4 class="mb12">Cookie <span style="font-size:10px;color:var(--dim);font-weight:400">(internal only — health-check, never sent to customers)</span></h4>
+      ${k.hasCookie?`
+      <div class="flex mb8" style="flex-wrap:wrap;gap:6px">
+        <button class="btn btn-ghost btn-sm" onclick="revealCookieInModal('${esc(key)}')">👁 Reveal</button>
+        <button class="btn btn-ghost btn-sm" onclick="checkKey('${esc(key)}')">🔍 Check Live</button>
+        ${k.service==='netflix'?`<button class="btn btn-ghost btn-sm" onclick="generateLinks('${esc(key)}',this)">🔗 Netflix Links</button>`:''}
+        <button class="btn btn-ghost btn-sm" onclick="showInjectHelper('${esc(key)}')">💉 Inject Helper</button>
+      </div>`:''}
+      <div class="form-row">
+        <textarea class="inp ta w100" id="vcCookie" style="height:70px;font-size:10px;font-family:monospace;letter-spacing:0" placeholder="${k.hasCookie?'Cookie stored. Click Reveal to see it. Paste new to replace, type CLEAR to remove.':'Paste cookie string to enable live health-checks…'}"></textarea>
+        ${k.hasCookie?`<div class="form-hint" style="color:var(--orange)">Leave blank = keep existing. Type CLEAR = remove. Paste new = replace.</div>`:''}
+      </div>
+      <div id="vcLinks" style="display:none;margin-top:4px;margin-bottom:12px"></div>
+      <div style="height:1px;background:var(--border);margin:16px 0"></div>
+      <div class="form-row">
+        <label>Note (admin only)</label>
+        <input class="inp w100" id="vcNote" value="${esc(k.note||'')}">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveKeyCredentials()">💾 Save</button>
+    </div>
+  `, 'modal-md');
+}
+
+async function saveKeyCredentials() {
+  const key = $('vcKey').value;
+  const k   = await api.get('/api/admin/key/'+encodeURIComponent(key));
+  const products = await api.get('/api/admin/products');
+  const p = products[k.service] || {};
+  const fields = p.credFields || [{k:'email'},{k:'password'}];
+  const creds = {};
+  fields.forEach(f => { const el=document.getElementById('vcf_'+f.k); if(el) creds[f.k]=el.value; });
+  const note      = $('vcNote')?.value || '';
+  const cookieRaw = $('vcCookie')?.value?.trim() || '';
+  const patch = { credentials: creds, note };
+  if (cookieRaw === 'CLEAR')  patch.cookie = '';
+  else if (cookieRaw)         patch.cookie = cookieRaw;
+  // if blank, don't touch existing cookie
+  await api.patch('/api/admin/key/'+encodeURIComponent(key), patch);
+  toast('Key saved', 'ok');
+  closeModal();
+  loadKeys();
+}
+
+async function unclaimKey(key) {
+  if (!confirm(`Unclaim key ${key}? This lets someone else claim it.`)) return;
+  await api.patch('/api/admin/key/'+encodeURIComponent(key), { claimed: false });
+  toast('Key unclaimed', 'ok'); loadKeys();
+}
+async function toggleDisable(key, disabled) {
+  await api.patch('/api/admin/key/'+encodeURIComponent(key), { disabled });
+  toast(disabled?'Key disabled':'Key enabled', 'ok'); loadKeys();
+}
+async function deleteKey(key) {
+  if (!confirm(`Delete key ${key}? This cannot be undone.`)) return;
+  await api.del('/api/admin/key/'+encodeURIComponent(key));
+  toast('Key deleted', 'ok'); loadKeys();
+}
+
+async function checkKey(key) {
+  toast('Checking cookie for '+key+'…', 'info', 3000);
+  const r = await api.post('/api/admin/check-key', { key });
+  if (r.error) { toast('Error: '+r.error, 'err'); return; }
+  if (r.alive === true)  toast('✅ Account is alive!', 'ok', 5000);
+  else if (r.alive === false) toast('💀 Account is dead — marked as expired', 'err', 6000);
+  else toast('❓ Could not determine status (network/no checker)', 'info', 5000);
+  loadKeys();
+}
+
+async function reviveKey(key) {
+  await api.patch('/api/admin/key/'+encodeURIComponent(key), { dead: false });
+  toast('Key revived — mark as available', 'ok'); loadKeys();
+}
+
+async function runCheckAll() {
+  const btn = document.getElementById('checkAllBtn');
+  if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Checking…'; }
+  toast('Checking all cookies — this may take a minute…', 'info', 60000);
+  try {
+    const r = await api.post('/api/admin/check-all', {});
+    toast(`Done: ${r.alive} alive · ${r.dead} dead · ${r.unknown} unknown (${r.checked} checked)`, r.dead>0?'err':'ok', 8000);
+  } catch(e) { toast('Check failed: '+e.message, 'err'); }
+  if (btn) { btn.disabled = false; btn.innerHTML = '🔍 Check All Cookies'; }
+  if (currentPage === 'keys') loadKeys();
+  else if (currentPage === 'dashboard') loadDashboard();
+}
+
+function exportKeys() {
+  const svc = keysFilter.service;
+  const st  = keysFilter.status || 'available';
+  const url = `/api/admin/keys/export?service=${svc}&status=${st}`;
+  const a   = document.createElement('a'); a.href=url; a.download='keys.txt'; a.click();
+}
+
+// ── ADD KEYS MODAL ────────────────────────────────────────────────────────────
+async function openAddKeys(preService='') {
+  const products = await api.get('/api/admin/products');
+  const svcOpts  = Object.values(products).sort((a,b)=>a.order-b.order)
+    .map(p=>`<option value="${p.id}" ${p.id===preService?'selected':''}>${p.icon} ${p.name}</option>`).join('');
+
+  openModal(`
+    <div class="modal-hd">
+      <div class="modal-title">➕ Add Keys</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="tab-row">
+        <div class="tab on"  data-tab="single"     onclick="switchTab(this)">Single Key</div>
+        <div class="tab"     data-tab="bulk"        onclick="switchTab(this)">Bulk Import</div>
+        <div class="tab"     data-tab="generate"    onclick="switchTab(this)">Auto-Generate</div>
+        <div class="tab"     data-tab="fileimport"  onclick="switchTab(this)">📁 File Import</div>
+      </div>
+
+      <!-- SINGLE -->
+      <div class="tab-pane on" id="tab-single">
+        <div class="form-row">
+          <label>Service</label>
+          <select class="inp w100" id="snglService" onchange="updateCredFields()">${svcOpts}</select>
+        </div>
+        <div class="form-row">
+          <label>Key (leave blank to auto-generate)</label>
+          <input class="inp w100" id="snglKey" placeholder="SENO-XXXX-XXXX-XXXX" style="font-family:monospace;letter-spacing:1px">
+        </div>
+        <div id="snglCredFields"></div>
+        <div class="form-row" style="margin-top:4px">
+          <label style="display:flex;align-items:center;gap:8px">
+            🍪 Cookie string
+            <span style="font-size:10px;color:var(--dim);font-weight:400;text-transform:none;letter-spacing:0">Used internally for live health-checks — NEVER shown to customers</span>
+          </label>
+          <textarea class="inp ta w100" id="snglCookie" style="height:80px;font-size:10px" placeholder="NetflixId=xxx; SecureNetflixId=xxx; ...&#10;(Paste the full cookie string — stored securely, never delivered to users)"></textarea>
+        </div>
+        <div class="form-row">
+          <label>Note (optional)</label>
+          <input class="inp w100" id="snglNote" placeholder="Internal note…">
+        </div>
+        <label style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:500;cursor:pointer;margin-top:4px">
+          <input type="checkbox" id="snglAutoCheck" style="accent-color:var(--purple)">
+          🔍 Check cookie immediately after adding
+        </label>
+      </div>
+
+      <!-- BULK -->
+      <div class="tab-pane" id="tab-bulk">
+        <div class="form-row">
+          <label>Service</label>
+          <select class="inp w100" id="bulkService">${svcOpts}</select>
+        </div>
+        <div class="form-row">
+          <label>Paste credentials (one per line)</label>
+          <textarea class="inp ta w100" id="bulkText" style="height:180px" placeholder="Format — one account per line:\nemail,password,plan,expires\n\nOr with your own key:\nSENO-XXXX-XXXX-XXXX,email,password,plan,expires\n\nLines without a SENO- key get auto-generated keys."></textarea>
+          <div class="form-hint">Each line = one key. Separate fields with comma. The server auto-generates SENO keys for lines without one.</div>
+        </div>
+        <div class="form-row">
+          <label style="display:flex;align-items:center;gap:8px">🍪 Shared cookie (optional — applied to all entries)
+            <span style="font-size:10px;color:var(--dim);font-weight:400;text-transform:none;letter-spacing:0">Internal health-check only</span>
+          </label>
+          <textarea class="inp ta w100" id="bulkCookie" style="height:60px;font-size:10px" placeholder="Cookie string if all entries share the same account cookie…"></textarea>
+        </div>
+      </div>
+
+      <!-- GENERATE -->
+      <div class="tab-pane" id="tab-generate">
+        <div class="form-row">
+          <label>Service</label>
+          <select class="inp w100" id="genService" onchange="updateGenCredFields()">${svcOpts}</select>
+        </div>
+        <div class="form-row">
+          <label>Number of keys to generate</label>
+          <input class="inp" id="genCount" type="number" value="10" min="1" max="500" style="width:120px">
+          <div class="form-hint">Max 500 per batch. Keys are random SENO-XXXX-XXXX-XXXX codes.</div>
+        </div>
+        <div id="genCredFields"></div>
+        <div class="form-row" style="margin-top:8px">
+          <label style="display:flex;align-items:center;gap:8px">🍪 Cookie template (optional)
+            <span style="font-size:10px;color:var(--dim);font-weight:400;text-transform:none;letter-spacing:0">Internal health-check — never shown to users</span>
+          </label>
+          <textarea class="inp ta w100" id="genCookie" style="height:60px;font-size:10px" placeholder="Cookie string shared by all generated keys…"></textarea>
+        </div>
+        <div class="form-hint" style="padding:10px;background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.2);border-radius:6px">
+          ⚠ All generated keys share the <b>same credentials + cookie</b>. Use Bulk Import for unique credentials per key.
+        </div>
+      </div>
+
+      <!-- FILE IMPORT -->
+      <div class="tab-pane" id="tab-fileimport">
+        <div class="form-grid" style="margin-bottom:14px">
+          <div class="form-row">
+            <label>Service</label>
+            <select class="inp w100" id="fiService">${svcOpts}</select>
+          </div>
+          <div class="form-row">
+            <label>Format</label>
+            <select class="inp w100" id="fiFormat">
+              <option value="auto">Auto-detect</option>
+              <option value="cookie">Cookie strings (one per line)</option>
+              <option value="combo">Combos (email,pass / email:pass)</option>
+              <option value="json">JSON array</option>
+            </select>
+          </div>
+        </div>
+        <div class="drop-zone" id="fiDropzone"
+          onclick="$('fiFileInput').click()"
+          ondragover="event.preventDefault();this.classList.add('drag-over')"
+          ondragleave="this.classList.remove('drag-over')"
+          ondrop="handleFileDrop(event)">
+          <div class="drop-ico">📂</div>
+          <div style="font-size:13px;font-weight:600;margin-bottom:4px">Drop files here or click to browse</div>
+          <div style="font-size:11px;color:var(--dim);margin-bottom:14px">Supports .txt · .csv · .json — one account per line or JSON array</div>
+          <div style="display:flex;justify-content:center;gap:8px" onclick="event.stopPropagation()">
+            <button class="btn btn-ghost btn-sm" onclick="$('fiFileInput').click()">📄 Select Files</button>
+            <button class="btn btn-ghost btn-sm" onclick="$('fiFolderInput').click()">📁 Select Folder</button>
+          </div>
+          <input type="file" id="fiFileInput" multiple accept=".txt,.csv,.json,.log" style="display:none" onchange="handleFileSelect(this)">
+          <input type="file" id="fiFolderInput" webkitdirectory multiple style="display:none" onchange="handleFileSelect(this)">
+        </div>
+        <div id="fiPreview" style="display:none;margin-top:14px">
+          <div class="flex-between mb8">
+            <span id="fiPreviewCount" class="text-small text-dim"></span>
+            <button class="btn btn-danger btn-sm" onclick="clearFileImport()">✕ Clear</button>
+          </div>
+          <div style="max-height:200px;overflow-y:auto;border:1px solid var(--border);border-radius:var(--r2);overflow:hidden">
+            <table style="width:100%;border-collapse:collapse">
+              <thead><tr>
+                <th style="padding:7px 12px;font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--dim2);background:rgba(255,255,255,.03);border-bottom:1px solid var(--border)">Email</th>
+                <th style="padding:7px 12px;font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--dim2);background:rgba(255,255,255,.03);border-bottom:1px solid var(--border)">Password</th>
+                <th style="padding:7px 12px;font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--dim2);background:rgba(255,255,255,.03);border-bottom:1px solid var(--border)">Cookie</th>
+                <th style="padding:7px 12px;font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--dim2);background:rgba(255,255,255,.03);border-bottom:1px solid var(--border)">Key</th>
+              </tr></thead>
+              <tbody id="fiPreviewBody"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="form-row" style="margin-top:14px">
+          <label style="display:flex;align-items:center;gap:8px">🍪 Shared Cookie
+            <span style="font-size:10px;color:var(--dim);font-weight:400;text-transform:none;letter-spacing:0">Applied to all entries (if no per-entry cookie in file)</span>
+          </label>
+          <textarea class="inp ta w100" id="fiSharedCookie" style="height:60px;font-size:10px" placeholder="Paste a shared cookie string…"></textarea>
+        </div>
+        <label style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:500;cursor:pointer">
+          <input type="checkbox" id="fiAutoCheck" style="accent-color:var(--purple)">
+          🔍 Auto-check cookies immediately after import
+        </label>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" id="addKeysBtn" onclick="submitAddKeys()">➕ Add Keys</button>
+    </div>
+  `, 'modal-lg');
+
+  updateCredFields();
+  updateGenCredFields();
+}
+
+async function getCredFieldsHTML(selectId) {
+  const svc = document.getElementById(selectId)?.value;
+  const products = await api.get('/api/admin/products');
+  const p = products[svc] || {};
+  const fields = p.credFields || [{k:'email',l:'Email'},{k:'password',l:'Password'},{k:'plan',l:'Plan',ph:''},{k:'expires',l:'Expires',ph:''}];
+  return fields.map(f=>`
+    <div class="form-row">
+      <label>${esc(f.l)} ${f.required?'<span style="color:var(--red)">*</span>':''}</label>
+      <input class="inp w100 cred-field" data-field="${f.k}" placeholder="${esc(f.ph||'')}" id="cf_${f.k}">
+    </div>
+  `).join('');
+}
+
+async function updateCredFields() {
+  const h = await getCredFieldsHTML('snglService');
+  const el = document.getElementById('snglCredFields');
+  if (el) el.innerHTML = h;
+}
+async function updateGenCredFields() {
+  const h = await getCredFieldsHTML('genService');
+  const el = document.getElementById('genCredFields');
+  if (el) el.innerHTML = '<h4 style="margin-bottom:12px;font-size:12px">Credentials template (all generated keys will have these)</h4>'+h;
+}
+
+function switchTab(btn) {
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('tab-'+btn.dataset.tab)?.classList.add('on');
+}
+
+async function submitAddKeys() {
+  const activeTab = document.querySelector('.tab.on')?.dataset.tab;
+  const btn = $('addKeysBtn');
+  btn.disabled = true; btn.innerHTML='<span class="spinner"></span> Adding…';
+
+  try {
+    if (activeTab === 'single') {
+      const service   = $('snglService')?.value;
+      const key       = $('snglKey')?.value?.trim() || '';
+      const note      = $('snglNote')?.value || '';
+      const cookie    = $('snglCookie')?.value?.trim() || '';
+      const autoCheck = $('snglAutoCheck')?.checked;
+      const creds     = {};
+      document.querySelectorAll('#tab-single .cred-field').forEach(el=>{ if(el.value) creds[el.dataset.field]=el.value; });
+      const body = { service, credentials: creds, note };
+      if (key)       body.key       = key;
+      if (cookie)    body.cookie    = cookie;
+      if (autoCheck) body.autoCheck = true;
+      const r = await api.post('/api/admin/keys', body);
+      if (r.error) throw new Error(r.error);
+      if (r.checked !== null && r.checked !== undefined) {
+        const alive = r.checked?.alive;
+        if (alive === true)  toast(`Key added ✅ Account is alive!`, 'ok', 6000);
+        else if (alive === false) toast(`Key added ⚠️ Cookie is dead — key marked as expired`, 'err', 7000);
+        else toast(`Key added: ${r.key} (cookie check inconclusive)`, 'ok', 6000);
+      } else {
+        toast(`Key added: ${r.key}`, 'ok', 6000);
+      }
+
+    } else if (activeTab === 'bulk') {
+      const service    = $('bulkService')?.value;
+      const sharedCookie = $('bulkCookie')?.value?.trim() || '';
+      const text       = $('bulkText')?.value || '';
+      const lines      = text.split('\n').map(l=>l.trim()).filter(l=>l && !l.startsWith('#'));
+      const entries    = lines.map(line => {
+        const parts = line.split(',').map(s=>s.trim());
+        let key = null, offset = 0;
+        if (parts[0].toUpperCase().startsWith('SENO-')) { key = parts[0].toUpperCase(); offset = 1; }
+        const [email='', password='', plan='', expires=''] = parts.slice(offset);
+        const creds = {};
+        if (email)   creds.email    = email;
+        if (password)creds.password = password;
+        if (plan)    creds.plan     = plan;
+        if (expires) creds.expires  = expires;
+        return key ? { key, credentials: creds } : { credentials: creds };
+      });
+      const r = await api.post('/api/admin/keys/bulk', { service, entries, cookie: sharedCookie || undefined });
+      if (r.error) throw new Error(r.error);
+      toast(`Added ${r.added} keys (${r.skipped} skipped)`, 'ok', 6000);
+
+    } else if (activeTab === 'generate') {
+      const service = $('genService')?.value;
+      const count   = parseInt($('genCount')?.value) || 1;
+      const cookie  = $('genCookie')?.value?.trim() || '';
+      const creds   = {};
+      document.querySelectorAll('#tab-generate .cred-field').forEach(el=>{ if(el.value) creds[el.dataset.field]=el.value; });
+      const body = { service, count, credentials: creds };
+      if (cookie) body.cookie = cookie;
+      const r = await api.post('/api/admin/keys/generate', body);
+      if (r.error) throw new Error(r.error);
+      toast(`Generated ${r.count} keys`, 'ok');
+      const textarea = document.createElement('textarea');
+      textarea.value = r.keys.join('\n');
+      Object.assign(textarea.style, { position:'fixed', top:'-9999px' });
+      document.body.appendChild(textarea); textarea.select(); document.execCommand('copy'); textarea.remove();
+      toast('Keys copied to clipboard!', 'ok', 5000);
+
+    } else if (activeTab === 'fileimport') {
+      if (fiParsedEntries.length === 0) throw new Error('No entries loaded — drop or select a file first');
+      const service      = $('fiService')?.value;
+      const sharedCookie = $('fiSharedCookie')?.value?.trim() || '';
+      const autoCheck    = $('fiAutoCheck')?.checked;
+      const r = await api.post('/api/admin/keys/bulk', {
+        service,
+        entries: fiParsedEntries.slice(0, 2000),
+        cookie: sharedCookie || undefined,
+      });
+      if (r.error) throw new Error(r.error);
+      toast(`Imported ${r.added} entries (${r.skipped} skipped)`, 'ok', 6000);
+      if (autoCheck && r.added > 0) {
+        setTimeout(() => { toast('Running cookie checks on imported keys…', 'info', 10000); runCheckAll(); }, 800);
+      }
+    }
+
+    closeModal();
+    loadKeys();
+  } catch(e) {
+    toast('Error: '+e.message, 'err');
+    btn.disabled = false; btn.innerHTML = '➕ Add Keys';
+  }
+}
+
+// ── Clipboard helper ──────────────────────────────────────────────────────────
+function cp(text) {
+  navigator.clipboard.writeText(text).then(()=>toast('Copied!','ok',2000)).catch(()=>{
+    const ta=document.createElement('textarea'); ta.value=text; ta.style.cssText='position:fixed;opacity:0';
+    document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
+    toast('Copied!','ok',2000);
+  });
+}
+
+// ── Cookie reveal in viewKey modal ────────────────────────────────────────────
+async function revealCookieInModal(key) {
+  const el = $('vcCookie');
+  if (!el) return;
+  const r = await api.get('/api/admin/key/'+encodeURIComponent(key)+'/cookie');
+  if (r.cookie) {
+    el.value = r.cookie;
+    el.style.height = '180px';
+    toast('Cookie revealed in text field', 'ok', 4000);
+  } else {
+    toast('No cookie stored for this key', 'info');
+  }
+}
+
+// ── Netflix login link generator ──────────────────────────────────────────────
+async function generateLinks(key, btn) {
+  const origHtml = btn.innerHTML;
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>';
+  try {
+    const r = await api.post('/api/admin/key/'+encodeURIComponent(key)+'/links', {});
+    btn.disabled = false; btn.innerHTML = origHtml;
+    const container = $('vcLinks');
+    if (!container) return;
+    if (r.error) { container.style.display='block'; container.innerHTML=`<div class="form-hint" style="color:var(--red)">⚠️ ${esc(r.message||r.error)}</div>`; return; }
+    if (r.links?.error) { container.style.display='block'; container.innerHTML=`<div class="form-hint" style="color:var(--orange)">Could not get links: ${esc(r.links.error)} — the cookie might not support this endpoint.</div>`; return; }
+    const L = r.links;
+    container.style.display = 'block';
+    container.innerHTML = `
+      <div style="font-size:11px;font-weight:700;margin-bottom:8px;color:var(--text)">🔗 Netflix Login Links</div>
+      ${['web','mobile','tv'].filter(k=>L[k]).map(type=>{
+        const icons = {web:'🌐',mobile:'📱',tv:'📺'};
+        return `<div class="link-card">
+          <div class="link-card-lbl">${icons[type]} ${type.toUpperCase()}</div>
+          <div class="link-card-url">${esc(L[type])}</div>
+          <div class="flex" style="gap:6px">
+            <button class="btn btn-ghost btn-sm" onclick="cp('${L[type].replace(/\\/g,'\\\\').replace(/'/g,"\\'")}')">📋 Copy</button>
+            <a href="${esc(L[type])}" target="_blank" class="btn btn-ghost btn-sm">Open ↗</a>
+          </div>
+        </div>`;
+      }).join('')}
+    `;
+    toast('Login links generated!', 'ok');
+  } catch(e) {
+    btn.disabled = false; btn.innerHTML = origHtml;
+    toast('Error: '+e.message, 'err');
+  }
+}
+
+// ── Cookie inject helper ───────────────────────────────────────────────────────
+async function showInjectHelper(key) {
+  const [cookieRes, keyData] = await Promise.all([
+    api.get('/api/admin/key/'+encodeURIComponent(key)+'/cookie'),
+    api.get('/api/admin/key/'+encodeURIComponent(key)),
+  ]);
+  if (!cookieRes.cookie) { toast('No cookie stored for this key', 'info'); return; }
+  const domainMap = { netflix:'.netflix.com', disney:'.disneyplus.com', spotify1m:'.spotify.com', spotify3m:'.spotify.com', chatgpt:'.openai.com', crunchyroll:'.crunchyroll.com', youtube:'.youtube.com', nordvpn:'.nordvpn.com' };
+  const domain = domainMap[keyData.service] || '';
+  const rawCookie = cookieRes.cookie;
+
+  openModal(`
+    <div class="modal-hd">
+      <div class="modal-title">💉 Cookie Injection Helper</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="padding:10px 14px;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);border-radius:8px;margin-bottom:16px;font-size:12px;line-height:1.6">
+        ⚠️ <b>Note:</b> <code>HttpOnly</code> cookies cannot be set via JavaScript. For those, use a cookie editor extension (links below).
+        Non-HttpOnly cookies can be injected with the bookmarklet.
+      </div>
+
+      <h4 style="font-size:12px;margin-bottom:8px">📋 Raw Cookie (copy → paste into extension)</h4>
+      <div style="position:relative;margin-bottom:16px">
+        <textarea class="inp ta w100 text-mono" id="rawCookieTa" style="height:80px;font-size:10px;user-select:all" readonly>${esc(rawCookie)}</textarea>
+        <button class="btn btn-primary btn-sm" style="position:absolute;top:8px;right:8px" onclick="cp(document.getElementById('rawCookieTa').value)">Copy</button>
+      </div>
+
+      <h4 style="font-size:12px;margin-bottom:8px">🔖 Bookmarklet (drag to bookmarks bar)</h4>
+      <div style="margin-bottom:8px">
+        <a href="javascript:(function(){var pairs=${JSON.stringify(rawCookie)}.split(/;\\s*/);pairs.forEach(function(p){var i=p.indexOf('=');if(i<0)return;var n=p.slice(0,i).trim(),v=p.slice(i+1).trim();document.cookie=n+'='+v+'; path=/'+(${JSON.stringify(domain)}?'; domain='+${JSON.stringify(domain)}:'')+'; expires='+new Date(Date.now()+7776000000).toUTCString();});alert('Injected '+pairs.length+' cookies. Refresh the page.');})();"
+          style="display:inline-block;padding:9px 18px;background:linear-gradient(135deg,var(--purple2),#4f46e5);color:#fff;border-radius:8px;font-size:12px;font-weight:700;text-decoration:none;cursor:grab"
+          draggable="true" onclick="return false">
+          💉 Inject ${esc(domain||'Cookies')}
+        </a>
+        <div class="form-hint" style="margin-top:8px">Drag to your bookmarks bar → navigate to ${esc(domain||'the service')} → click bookmark.</div>
+      </div>
+
+      <h4 style="font-size:12px;margin-bottom:8px">🌐 Cookie Editor Extensions (recommended)</h4>
+      <div class="flex" style="gap:8px;flex-wrap:wrap">
+        <a href="https://chrome.google.com/webstore/detail/cookie-editor/hlkenndednhfkekhgcdicdfddnkalmdm" target="_blank" class="btn btn-ghost btn-sm">Cookie Editor — Chrome</a>
+        <a href="https://addons.mozilla.org/en-US/firefox/addon/cookie-editor/" target="_blank" class="btn btn-ghost btn-sm">Cookie Editor — Firefox</a>
+        <a href="https://chrome.google.com/webstore/detail/editthiscookie/fngmhnnpilhplaeedifhccceomclgfbg" target="_blank" class="btn btn-ghost btn-sm">EditThisCookie — Chrome</a>
+      </div>
+      <div class="form-hint" style="margin-top:8px">With a cookie editor: navigate to ${esc(domain||'the service site')}, open the extension, import or paste each cookie manually.</div>
+    </div>
+  `, 'modal-md');
+}
+
+// ── File Import ───────────────────────────────────────────────────────────────
+let fiParsedEntries = [];
+
+function parseClientSide(content, format) {
+  const entries = [];
+  const trimmed = content.trim();
+  if (format === 'auto' || format === 'json') {
+    if (trimmed.startsWith('[') || trimmed.startsWith('{')) {
+      try {
+        let arr = JSON.parse(trimmed);
+        if (!Array.isArray(arr)) arr = [arr];
+        for (const item of arr) {
+          const e = { credentials: {} };
+          if (item.key) e.key = item.key;
+          if (item.cookie) e.cookie = item.cookie;
+          for (const f of ['email','password','plan','expires','pin','apiKey','username','user','pass']) {
+            if (item[f]) { const m=f==='user'?'email':f==='pass'?'password':f; e.credentials[m]=item[f]; }
+          }
+          if (item.credentials) Object.assign(e.credentials, item.credentials);
+          entries.push(e);
+        }
+        if (entries.length > 0) return entries;
+      } catch {}
+    }
+  }
+  const looksLikeCookie = (line) => {
+    if (line.length < 20) return false;
+    const parts = line.split(/;/);
+    if (parts.length < 2) return false;
+    const kvParts = parts.filter(p => p.trim().includes('='));
+    if (kvParts.length < 2) return false;
+    // Well-known cookie names → always treat as cookie
+    if (/NetflixId|SecureNetflixId|sp_dc|__Secure-|SSID|SID=|HSID|APISID|auth_token|sessionid|remember_me|cf_clearance|__cf_bm|user_session|_ga|PHPSESSID/i.test(line)) return true;
+    // Fallback: multiple key=value pairs with semicolons and reasonable length
+    return kvParts.length >= 3 || (kvParts.length >= 2 && line.length > 60);
+  };
+
+  const lines = trimmed.split('\n').map(l=>l.trim()).filter(l=>l && !l.startsWith('#') && !l.startsWith('//'));
+  for (const line of lines) {
+    if (format === 'cookie' || (format === 'auto' && looksLikeCookie(line))) {
+      entries.push({ cookie: line, credentials: {} }); continue;
+    }
+    const sep = line.includes(',') ? ',' : ':';
+    const parts = line.split(sep).map(s=>s.trim());
+    let offset = 0;
+    const e = { credentials: {} };
+    if (parts[0]?.toUpperCase().startsWith('SENO-')) { e.key = parts[0].toUpperCase(); offset = 1; }
+    const [email='',password='',plan='',expires=''] = parts.slice(offset);
+    if (email) e.credentials.email = email;
+    if (password) e.credentials.password = password;
+    if (plan) e.credentials.plan = plan;
+    if (expires) e.credentials.expires = expires;
+    entries.push(e);
+  }
+  return entries;
+}
+
+async function handleFileSelect(input) {
+  await processImportFiles(Array.from(input.files));
+}
+
+async function handleFileDrop(event) {
+  event.preventDefault();
+  const dz = $('fiDropzone'); if (dz) dz.classList.remove('drag-over');
+  const items = Array.from(event.dataTransfer.items || []);
+  if (!items.length) return;
+  const files = [];
+
+  // Traverse a FileSystemEntry (handles folders recursively)
+  const readEntry = (entry) => new Promise(resolve => {
+    if (entry.isFile) {
+      entry.file(f => { files.push(f); resolve(); }, () => resolve());
+    } else if (entry.isDirectory) {
+      const reader = entry.createReader();
+      const readBatch = () => {
+        reader.readEntries(async entries => {
+          if (!entries.length) return resolve();
+          await Promise.all(entries.map(e => readEntry(e)));
+          readBatch(); // readEntries returns max 100 at a time
+        }, () => resolve());
+      };
+      readBatch();
+    } else resolve();
+  });
+
+  await Promise.all(items.map(item => {
+    if (item.kind !== 'file') return Promise.resolve();
+    const entry = item.webkitGetAsEntry?.();
+    if (entry) return readEntry(entry);
+    const f = item.getAsFile();
+    if (f) files.push(f);
+    return Promise.resolve();
+  }));
+
+  await processImportFiles(files.filter(f => /\.(txt|csv|json|log)$/i.test(f.name)));
+}
+
+async function processImportFiles(files) {
+  fiParsedEntries = [];
+  const format = $('fiFormat')?.value || 'auto';
+  let errors = 0;
+  for (const file of files) {
+    try {
+      const content = await file.text();
+      const got = parseClientSide(content, format);
+      fiParsedEntries.push(...got);
+    } catch(e) { errors++; }
+  }
+  if (errors) toast(`Could not read ${errors} file(s)`, 'err');
+  updateFilePreview();
+}
+
+function updateFilePreview() {
+  const preview = $('fiPreview'), count = $('fiPreviewCount'), body = $('fiPreviewBody');
+  if (!preview || !body) return;
+  if (fiParsedEntries.length === 0) { preview.style.display='none'; return; }
+  preview.style.display = 'block';
+  count.textContent = fiParsedEntries.length + ' entries ready to import' + (fiParsedEntries.length > 50 ? ' (showing first 50)' : '');
+  body.innerHTML = fiParsedEntries.slice(0,50).map(e=>`
+    <tr style="border-bottom:1px solid rgba(255,255,255,.04)">
+      <td style="padding:6px 12px;font-size:11px">${esc(e.credentials?.email||'—')}</td>
+      <td style="padding:6px 12px;font-size:11px">${e.credentials?.password?'••••':'—'}</td>
+      <td style="padding:6px 12px;font-size:11px">${e.cookie?'<span style="color:var(--green)">✓</span>':'—'}</td>
+      <td style="padding:6px 12px;font-size:11px;font-family:monospace">${esc(e.key||'auto')}</td>
+    </tr>
+  `).join('');
+}
+
+function clearFileImport() {
+  fiParsedEntries = [];
+  const fi=$('fiFileInput'), ff=$('fiFolderInput');
+  if(fi) fi.value=''; if(ff) ff.value='';
+  updateFilePreview();
+}
+
+// ── PRODUCTS ──────────────────────────────────────────────────────────────────
+async function loadProducts() {
+  $('topbarActions').innerHTML = `<button class="btn btn-primary" onclick="openAddProduct()">➕ Add Product</button>`;
+  $('content').innerHTML = '<div class="text-dim">Loading…</div>';
+  const products = await api.get('/api/admin/products');
+  const keys     = await api.get('/api/admin/keys');
+  const stock    = {};
+  keys.forEach(k=>{ if(!k.claimed&&!k.disabled) stock[k.service]=(stock[k.service]||0)+1; });
+
+  $('content').innerHTML = `
+    <p class="text-dim mb16" style="font-size:12px">Products shown on the customer site. Add a product then add keys for it.</p>
+    <div class="product-grid">
+      ${Object.values(products).sort((a,b)=>(a.order||99)-(b.order||99)).map(p=>`
+        <div class="pc">
+          <div class="pc-top">
+            <div class="pc-ico">${esc(p.icon||'🔑')}</div>
+            <span class="badge ${p.enabled!==false?'badge-green':'badge-gray'}">${p.enabled!==false?'Active':'Hidden'}</span>
+          </div>
+          <div class="pc-name">${esc(p.name)}</div>
+          <div class="pc-cat">${esc(p.cat||'')}</div>
+          <div class="pc-stock">
+            <span class="text-small text-dim">In stock:</span>
+            <span style="font-weight:700;color:${(stock[p.id]||0)>0?'var(--green)':'var(--red)'}">${stock[p.id]||0}</span>
+          </div>
+          <div class="pc-actions">
+            <button class="btn btn-ghost btn-sm w100" onclick="openAddProduct('${esc(p.id)}')">✏️ Edit</button>
+            <button class="btn btn-ghost btn-sm" onclick="openAddKeys('${esc(p.id)}')">➕ Stock</button>
+            <button class="btn btn-ghost btn-sm" onclick="toggleProduct('${esc(p.id)}',${p.enabled===false})">${p.enabled===false?'Show':'Hide'}</button>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+async function toggleProduct(id, enable) {
+  await api.patch('/api/admin/products/'+id, { enabled: enable });
+  toast(enable?'Product shown on site':'Product hidden from site', 'ok');
+  loadProducts();
+}
+
+async function openAddProduct(editId='') {
+  const products = await api.get('/api/admin/products');
+  const p = editId ? (products[editId]||{}) : {};
+  const isEdit = !!editId;
+
+  openModal(`
+    <div class="modal-hd">
+      <div class="modal-title">${isEdit?'✏️ Edit':'➕ Add'} Product</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-row">
+          <label>Product ID (no spaces)</label>
+          <input class="inp w100" id="pId" value="${esc(p.id||'')}" placeholder="netflix" ${isEdit?'readonly':''}
+            style="${isEdit?'opacity:.5':''}" oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9]/g,'')">
+        </div>
+        <div class="form-row">
+          <label>Display Name</label>
+          <input class="inp w100" id="pName" value="${esc(p.name||'')}" placeholder="Netflix Premium">
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-row">
+          <label>Category</label>
+          <select class="inp w100" id="pCat">
+            ${['streaming','music','ai','tools','gaming','other'].map(c=>`<option value="${c}" ${p.cat===c?'selected':''}>${c}</option>`).join('')}
+          </select>
+        </div>
+        <div class="form-row">
+          <label>Icon (emoji)</label>
+          <input class="inp w100" id="pIcon" value="${esc(p.icon||'🔑')}" placeholder="🎬">
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-row">
+          <label>Brand Color</label>
+          <input class="inp w100" id="pColor" value="${esc(p.color||'#8b5cf6')}" placeholder="#e50914">
+        </div>
+        <div class="form-row">
+          <label>Sort Order</label>
+          <input class="inp" id="pOrder" type="number" value="${p.order||99}" style="width:80px">
+        </div>
+      </div>
+      <div class="form-row">
+        <label>Description</label>
+        <input class="inp w100" id="pDesc" value="${esc(p.desc||'')}" placeholder="Short product description…">
+      </div>
+      <div class="form-row">
+        <label>Tags (comma separated)</label>
+        <input class="inp w100" id="pTags" value="${esc((p.tags||[]).join(', '))}" placeholder="4K, 4 Screens, Private">
+      </div>
+      <div class="form-row">
+        <label>Credential fields (comma-separated keys)</label>
+        <input class="inp w100" id="pCredKeys" value="${esc((p.credFields||[{k:'email'},{k:'password'},{k:'plan'},{k:'expires'}]).map(f=>f.k).join(', '))}" placeholder="email, password, plan, expires">
+        <div class="form-hint">These are the fields shown when adding keys. Common: email, password, plan, expires, pin, apiKey, server</div>
+      </div>
+      <div class="form-row">
+        <label>Customer note (shown after redeem)</label>
+        <input class="inp w100" id="pNote" value="${esc(p.note||'')}" placeholder="Change the password immediately after signing in.">
+      </div>
+      ${isEdit?`<button class="btn btn-danger" style="margin-top:8px" onclick="deleteProduct('${esc(editId)}')">🗑 Delete Product</button>`:''}
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveProduct('${esc(editId)}')">💾 ${isEdit?'Save Changes':'Add Product'}</button>
+    </div>
+  `, 'modal-lg');
+}
+
+async function saveProduct(editId) {
+  const id    = editId || $('pId')?.value?.trim();
+  if (!id) { toast('Product ID required','err'); return; }
+  const name  = $('pName')?.value?.trim();
+  if (!name) { toast('Name required','err'); return; }
+  const cat   = $('pCat')?.value;
+  const icon  = $('pIcon')?.value?.trim()||'🔑';
+  const color = $('pColor')?.value?.trim()||'#8b5cf6';
+  const order = parseInt($('pOrder')?.value)||99;
+  const desc  = $('pDesc')?.value?.trim()||'';
+  const tags  = ($('pTags')?.value||'').split(',').map(t=>t.trim()).filter(Boolean);
+  const note  = $('pNote')?.value?.trim()||'';
+  const ckraw = ($('pCredKeys')?.value||'email,password,plan,expires').split(',').map(s=>s.trim()).filter(Boolean);
+  const labelMap = {email:'Email',password:'Password',plan:'Plan',expires:'Expires',pin:'PIN',apiKey:'API Key',server:'Server',username:'Username'};
+  const credFields = ckraw.map(k=>({ k, l: labelMap[k]||k.charAt(0).toUpperCase()+k.slice(1), ph:'' }));
+  const bg = color.startsWith('#') ? hexToRgba(color, .12) : color;
+
+  const products = await api.get('/api/admin/products');
+  const existing = products[id] || {};
+  const product  = { ...existing, id, name, cat, icon, color, bg, desc, tags, credFields, note, order, enabled: existing.enabled !== false };
+  const r = await api.post('/api/admin/products', product);
+  if (r.error) { toast('Error: '+r.error,'err'); return; }
+  toast(editId ? 'Product updated' : 'Product added', 'ok');
+  closeModal(); loadProducts();
+}
+
+async function deleteProduct(id) {
+  if (!confirm(`Delete product "${id}"? Keys for this product remain but the product won't show on site.`)) return;
+  await api.del('/api/admin/products/'+id);
+  toast('Product deleted','ok'); closeModal(); loadProducts();
+}
+
+function hexToRgba(hex, alpha) {
+  const r=parseInt(hex.slice(1,3),16), g=parseInt(hex.slice(3,5),16), b=parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+// ── LOG ───────────────────────────────────────────────────────────────────────
+async function loadLog() {
+  $('topbarActions').innerHTML = `<button class="btn btn-danger btn-sm" onclick="clearLog()">🗑 Clear Log</button>`;
+  $('content').innerHTML = '<div class="text-dim">Loading…</div>';
+  const log = await api.get('/api/admin/log');
+  $('content').innerHTML = `
+    <div class="tbl-wrap">
+      <div class="tbl-head">
+        <span class="text-dim text-small">${log.length} entries</span>
+      </div>
+      <div class="tbl-scroll">
+        <table>
+          <thead><tr><th>Time</th><th>Type</th><th>Key</th><th>Service</th><th>IP</th></tr></thead>
+          <tbody>
+            ${log.length===0?`<tr><td colspan="5" class="tbl-empty">No redemptions yet</td></tr>`
+              : log.map(l=>`
+                <tr>
+                  <td class="text-small text-dim">${fmtDate(l.at)}</td>
+                  <td><span class="log-type-${l.type}">${l.type==='redeem'?'🆕 New Claim':'↩ Retrieve'}</span></td>
+                  <td><code>${esc(l.key)}</code></td>
+                  <td>${esc(l.service||'')}</td>
+                  <td class="text-small text-dim">${esc(l.ip||'—')}</td>
+                </tr>
+              `).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+async function clearLog() {
+  if (!confirm('Clear all log entries? This cannot be undone.')) return;
+  await api.del('/api/admin/log');
+  toast('Log cleared','ok'); loadLog();
+}
+
+// ── SETTINGS ─────────────────────────────────────────────────────────────────
+async function loadSettings() {
+  $('topbarActions').innerHTML='';
+  $('content').innerHTML = '<div class="text-dim">Loading…</div>';
+  const cfg = await api.get('/api/admin/config');
+  $('content').innerHTML = `
+    <div style="max-width:540px">
+      <div class="card mb16">
+        <h3 style="margin-bottom:16px;font-size:14px">Site Configuration</h3>
+        <div class="form-row">
+          <label>Site Name</label>
+          <input class="inp w100" id="cfgName" value="${esc(cfg.siteName||'SenoKey')}">
+        </div>
+        <div class="form-row">
+          <label>Site Tagline</label>
+          <input class="inp w100" id="cfgTagline" value="${esc(cfg.siteTagline||'Your Key. Instant Access.')}">
+        </div>
+        <button class="btn btn-primary" onclick="saveConfig()">💾 Save Site Config</button>
+      </div>
+
+      <div class="card mb16">
+        <h3 style="margin-bottom:16px;font-size:14px">Change Password</h3>
+        <div class="form-row">
+          <label>Current Password</label>
+          <input class="inp w100" id="curPwd" type="password">
+        </div>
+        <div class="form-row">
+          <label>New Password</label>
+          <input class="inp w100" id="newPwd" type="password">
+        </div>
+        <div class="form-row">
+          <label>Confirm New Password</label>
+          <input class="inp w100" id="confPwd" type="password">
+        </div>
+        <button class="btn btn-primary" onclick="changePassword()">🔑 Change Password</button>
+      </div>
+
+      <div class="card mb16" style="border-color:rgba(229,9,20,.25)">
+        <h3 style="margin-bottom:8px;font-size:14px">🧪 Test Netflix Cookie</h3>
+        <p class="text-dim text-small mb12">Paste a full Netflix Cookie header (or one Netscape-format line with NetflixId) to see exactly what the Netflix API returns. Use this to diagnose why token generation is failing.</p>
+        <textarea class="inp w100" id="nfTestCookie" rows="3" placeholder="NetflixId=xxx; SecureNetflixId=yyy; nfvdid=zzz&#10;OR paste a Netscape tab-separated line" style="font-family:monospace;font-size:11px;resize:vertical"></textarea>
+        <button class="btn btn-primary mt8" onclick="testNetflixCookie()">🔍 Test Cookie</button>
+        <div id="nfTestResult" style="margin-top:12px;display:none"></div>
+      </div>
+
+      <div class="card" style="border-color:rgba(244,63,94,.25)">
+        <h3 style="margin-bottom:8px;font-size:14px;color:var(--red)">Danger Zone</h3>
+        <p class="text-dim text-small mb12">These actions cannot be undone.</p>
+        <div class="flex">
+          <button class="btn btn-danger" onclick="clearLog()">🗑 Clear Redemption Log</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+async function saveConfig() {
+  const siteName    = $('cfgName')?.value?.trim();
+  const siteTagline = $('cfgTagline')?.value?.trim();
+  const r = await api.post('/api/admin/config', { siteName, siteTagline });
+  if (r.error) { toast('Error: '+r.error,'err'); return; }
+  toast('Config saved','ok');
+}
+
+async function testNetflixCookie() {
+  const raw = $('nfTestCookie')?.value?.trim();
+  if (!raw) { toast('Paste a cookie first','err'); return; }
+  // Auto-parse Netscape line into a Cookie header
+  let cookie = raw;
+  if (raw.includes('\t')) {
+    const parts = raw.split('\t');
+    if (parts.length >= 7) cookie = `${parts[5]}=${parts[6]}`;
+  }
+  const btn = document.querySelector('[onclick="testNetflixCookie()"]');
+  btn.disabled = true; btn.textContent = '⏳ Testing…';
+  const r = await api.post('/api/admin/test-netflix', { cookie });
+  btn.disabled = false; btn.textContent = '🔍 Test Cookie';
+  const box = $('nfTestResult');
+  box.style.display = 'block';
+  if (r.error) { box.innerHTML = `<div class="text-red">${esc(r.error)}</div>`; return; }
+  const rows = (r.results||[]).map(x => {
+    const ok = x.status === 200;
+    const color = ok ? 'var(--green)' : 'var(--red)';
+    const bodySnip = x.body ? `<div style="font-family:monospace;font-size:10px;color:var(--dim);margin-top:3px;word-break:break-all">${esc(x.body)}</div>` : '';
+    return `<div style="margin-bottom:8px;padding:8px;border-radius:6px;border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.03)">
+      <span style="color:${color};font-weight:700">${x.method} ${esc(x.ep)}</span>
+      <span style="margin-left:8px;color:${color}">${x.error ? '❌ '+esc(x.error) : 'HTTP '+x.status}</span>
+      ${bodySnip}
+    </div>`;
+  }).join('');
+  box.innerHTML = rows || '<div class="text-dim">No results</div>';
+}
+
+async function changePassword() {
+  const cur  = $('curPwd')?.value;
+  const nw   = $('newPwd')?.value;
+  const conf = $('confPwd')?.value;
+  if (!cur||!nw) { toast('Fill in all fields','err'); return; }
+  if (nw !== conf) { toast('Passwords do not match','err'); return; }
+  if (nw.length < 6) { toast('Password must be at least 6 characters','err'); return; }
+  const r = await api.post('/api/admin/config', { currentPassword: cur, newPassword: nw });
+  if (r.error === 'wrong_current_password') { toast('Current password is wrong','err'); return; }
+  if (r.error) { toast('Error: '+r.error,'err'); return; }
+  toast('Password changed! Sign in again.','ok',5000);
+  setTimeout(()=>doLogout(), 2000);
+}
+</script>
+</body>
+</html>
